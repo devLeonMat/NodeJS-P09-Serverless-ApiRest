@@ -25,6 +25,8 @@ provider:
   runtime: nodejs12.x
   stage: dev
   region: us-east-1
+  enviroment:
+    GOOGLE_MAPS_API_KEY: KEY3S2X1SA534C
 
 # you can overwrite defaults here
 
@@ -64,6 +66,20 @@ functions:
       - http:
           path: first-endpoint
           method: get
+  cient:
+    handler: handler.client
+    events:
+      - http:
+          path: client-endpoint
+          method: post
+  envVariables:
+    handler: envVariables.variables
+    events:
+      - http:
+          path: envVariables
+          method: get
+    enviroment:
+      OTHER_API_KEY: KEY3S2X1SA534C
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -101,12 +117,28 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+resources:
+  Resources:
+    uploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-${self:provider.stage}-uploads
+    userTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-users
+        AttributeDefinitions:
+          -
+            AttributeName: "userId"
+            AttributeType: "S"
+        KeySchema:
+          -
+            AttributeName: "userId"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
