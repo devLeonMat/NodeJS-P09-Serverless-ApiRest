@@ -11,24 +11,26 @@
 #
 # Happy Coding!
 
-service: nodejs-p09-serverless-apirest
+service: firstservice
+
+plugins:
+  - serverless-offline
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-# frameworkVersion: "=X.X.X"
+frameworkVersion: '2'
 
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: dev
-  region: us-east-1
-  enviroment:
-    GOOGLE_MAPS_API_KEY: KEY3S2X1SA534C
+  lambdaHashingVersion: 20201221
 
 # you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -52,37 +54,33 @@ provider:
 
 # you can add packaging information here
 #package:
-#  include:
+#  patterns:
+#    - '!exclude-me.js'
+#    - '!exclude-me-dir/**'
 #    - include-me.js
 #    - include-me-dir/**
-#  exclude:
-#    - exclude-me.js
-#    - exclude-me-dir/**
 
 functions:
   hello:
     handler: handler.hello
     events:
       - http:
-          path: first-endpoint
+          path: hello-wolrd/{name}
           method: get
-  cient:
-    handler: handler.client
+
+  showUser:
+    handler: handler.showUser
     events:
       - http:
-          path: client-endpoint
+          path: user
           method: post
-  envVariables:
-    handler: envVariables.variables
-    events:
-      - http:
-          path: envVariables
-          method: get
-    enviroment:
-      OTHER_API_KEY: KEY3S2X1SA534C
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
+#    events:
+#      - httpApi:
+#          path: /users/create
+#          method: get
 #      - websocket: $connect
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
@@ -117,28 +115,12 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-resources:
-  Resources:
-    uploadBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${self:service}-${self:provider.stage}-uploads
-    userTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:service}-${self:provider.stage}-users
-        AttributeDefinitions:
-          -
-            AttributeName: "userId"
-            AttributeType: "S"
-        KeySchema:
-          -
-            AttributeName: "userId"
-            KeyType: "HASH"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
